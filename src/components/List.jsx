@@ -30,7 +30,6 @@ const List = () => {
             totalCount, doneCount, notDoneCount
         }
     }, [todos]);
-    // const {totalCount, doneCount, notDoneCount} = getAnalyzedData();
 
     return (
         <div className={"List"}>

@@ -8,8 +8,8 @@ const Editor = () => {
     const contentRef = useRef("");
 
     const onChangeContent = (e) => {
-        setContent(e.target.value);
-    };
+    setContent(e.target.value);
+};
 
     const onKeyDown = (e) => {
         if (e.key === "Enter") {

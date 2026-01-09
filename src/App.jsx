@@ -9,19 +9,19 @@ const mockData = [
     {
         id: 0, isDone: false,
         content: "React 공부하기",
-        date: new Date().getTime(),
+        date: Date.now(),
     },
     {
         id: 1,
         isDone: false,
         content: "빨래하기",
-        date: new Date().getTime(),
+        date: Date.now(),
     },
     {
         id: 2,
         isDone: false,
         content: "노래 연습하기",
-        date: new Date().getTime(),
+        date: Date.now(),
     }
 ];
 
@@ -54,7 +54,7 @@ function App() {
             data: {
                 id: idRef.current++,
                 isDone: false, content,
-                date: new Date().getTime(),
+                date: Date.now(),
             }
         });
     }, []);
@@ -79,17 +79,15 @@ function App() {
     }, []);
 
     return (
-        <>
-            <div className="App">
-                <Header/>
-                <TodoStateContext.Provider value={todos}>
-                    <TodoDispatchContext.Provider value={memoizedDispatch}>
-                        <Editor />
-                        <List />
-                    </TodoDispatchContext.Provider>
-                </TodoStateContext.Provider>
-            </div>
-        </>
+        <div className="App">
+            <Header/>
+            <TodoStateContext.Provider value={todos}>
+                <TodoDispatchContext.Provider value={memoizedDispatch}>
+                    <Editor/>
+                    <List/>
+                </TodoDispatchContext.Provider>
+            </TodoStateContext.Provider>
+        </div>
     );
 }
 
