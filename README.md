@@ -21,4 +21,4 @@ If you are developing a production application, we recommend using TypeScript wi
 
 ## Sources
 
-[![React Study](https://img.shields.io/badge/React_Study-한_입_크기로_잘라_먹는_리액트-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://inf.run/JhBG)
+[![React Study](https://img.shields.io/badge/React_Study-한_입_크기로_잘라_먹는_리액트-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://inf.run/EnXcr)
