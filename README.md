@@ -31,14 +31,33 @@ If you are developing a production application, we recommend using TypeScript wi
 
 2. **Firestore 데이터베이스 생성**
    - Firebase Console > Firestore Database > 데이터베이스 만들기
-   - 테스트 모드로 시작 (개발용) 또는 프로덕션 모드 선택
+   - **중요**: 테스트 모드로 시작 (개발용)
+   - 위치: asia-northeast3 (Seoul) 선택 권장
 
 3. **Firebase 설정 정보 가져오기**
    - Firebase Console > 프로젝트 설정 > 일반
    - "내 앱" 섹션에서 웹 앱 추가 (</> 아이콘)
    - SDK 구성 정보 복사
 
-4. **환경 변수 설정**
+4. **Firestore 보안 규칙 설정** ⚠️ **중요**
+   - Firebase Console > Firestore Database > 규칙 탭
+   - 다음 규칙으로 변경 (개발/테스트용):
+   ```
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /{document=**} {
+         allow read, write: if true;
+       }
+     }
+   }
+   ```
+   - "게시" 버튼 클릭하여 규칙 적용
+   - ⚠️ 주의: 이 규칙은 개발용입니다. 프로덕션에서는 적절한 인증 규칙을 설정하세요.
+
+5. **환경 변수 설정**
+
+   **로컬 개발:**
    ```bash
    cp .env.example .env
    ```
@@ -52,11 +71,36 @@ If you are developing a production application, we recommend using TypeScript wi
    VITE_FIREBASE_APP_ID=your-app-id
    ```
 
-5. **의존성 설치 및 실행**
+   **Vercel 배포:**
+   - Vercel Dashboard > Project Settings > Environment Variables
+   - 다음 환경변수 추가:
+     - `VITE_FIREBASE_API_KEY`
+     - `VITE_FIREBASE_AUTH_DOMAIN`
+     - `VITE_FIREBASE_PROJECT_ID` (오타 주의: VITR이 아니라 VITE)
+     - `VITE_FIREBASE_STORAGE_BUCKET`
+     - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+     - `VITE_FIREBASE_APP_ID`
+   - Production, Preview, Development 모두 체크
+   - 저장 후 재배포
+
+6. **의존성 설치 및 실행**
    ```bash
    npm install
    npm run dev
    ```
+
+### 문제 해결
+
+**"database를 찾을 수 없습니다" 오류:**
+1. Firebase Console에서 Firestore Database가 생성되었는지 확인
+2. Firestore 보안 규칙이 올바르게 설정되었는지 확인 (위의 4번 단계)
+3. 브라우저 콘솔(F12)에서 상세한 에러 메시지 확인
+4. 환경 변수가 모두 올바르게 설정되었는지 확인 (특히 `VITE_FIREBASE_PROJECT_ID`)
+
+**Vercel 배포 후 작동하지 않는 경우:**
+1. 환경 변수 이름에 오타가 없는지 확인 (`VITR` → `VITE`)
+2. 환경 변수가 모든 환경(Production, Preview, Development)에 설정되었는지 확인
+3. 환경 변수 변경 후 반드시 재배포 필요
 
 ### 기능
 
