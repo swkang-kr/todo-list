@@ -44,7 +44,11 @@ function App() {
     // Firestore 실시간 동기화
     useEffect(() => {
         if (!db) {
-            console.error("Firestore 데이터베이스가 초기화되지 않았습니다.");
+            console.error("❌ Firestore 데이터베이스가 초기화되지 않았습니다.");
+            console.error("📋 환경변수 설정을 확인하세요:");
+            console.error("현재 환경:", import.meta.env.MODE);
+            console.error("VITE_FIREBASE_API_KEY:", import.meta.env.VITE_FIREBASE_API_KEY ? "설정됨" : "❌ 없음");
+            console.error("VITE_FIREBASE_PROJECT_ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID ? "설정됨" : "❌ 없음");
             return;
         }
 
