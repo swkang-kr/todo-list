@@ -43,25 +43,56 @@ function App() {
 
     // Firestore 실시간 동기화
     useEffect(() => {
-        const q = query(collection(db, 'todos'), orderBy('date', 'desc'));
+        if (!db) {
+            console.error("Firestore 데이터베이스가 초기화되지 않았습니다.");
+            return;
+        }
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const todosData = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                // Firestore Timestamp를 밀리초로 변환
-                date: doc.data().date?.toMillis() || Date.now(),
-            }));
+        try {
+            const q = query(collection(db, 'todos'), orderBy('date', 'desc'));
 
-            dispatch({
-                type: "INIT",
-                data: todosData
-            });
-        }, (error) => {
-            console.error("Error fetching todos:", error);
-        });
+            const unsubscribe = onSnapshot(q,
+                (snapshot) => {
+                    const todosData = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                        // Firestore Timestamp를 밀리초로 변환
+                        date: doc.data().date?.toMillis() || Date.now(),
+                    }));
 
-        return () => unsubscribe();
+                    console.log(`${todosData.length}개의 Todo 항목을 불러왔습니다.`);
+
+                    dispatch({
+                        type: "INIT",
+                        data: todosData
+                    });
+                },
+                (error) => {
+                    console.error("Firestore 데이터 불러오기 실패:", error);
+                    console.error("에러 코드:", error.code);
+                    console.error("에러 메시지:", error.message);
+
+                    if (error.code === 'permission-denied') {
+                        console.error("⚠️ Firestore 보안 규칙 오류: 읽기 권한이 없습니다.");
+                        console.error("Firebase Console > Firestore Database > 규칙에서 다음 규칙을 설정하세요:");
+                        console.error(`
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+                        `);
+                    }
+                }
+            );
+
+            return () => unsubscribe();
+        } catch (error) {
+            console.error("Firestore 쿼리 생성 실패:", error);
+        }
     }, []);
 
     // Mount 시 한번만 생성 by useCallback
