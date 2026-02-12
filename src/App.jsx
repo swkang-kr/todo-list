@@ -44,7 +44,11 @@ function App() {
     // Firestore 실시간 동기화
     useEffect(() => {
         if (!db) {
-            console.error("Firestore 데이터베이스가 초기화되지 않았습니다.");
+            console.error("❌ Firestore 데이터베이스가 초기화되지 않았습니다.");
+            console.error("📋 환경변수 설정을 확인하세요:");
+            console.error("현재 환경:", import.meta.env.MODE);
+            console.error("VITE_FIREBASE_API_KEY:", import.meta.env.VITE_FIREBASE_API_KEY ? "설정됨" : "❌ 없음");
+            console.error("VITE_FIREBASE_PROJECT_ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID ? "설정됨" : "❌ 없음");
             return;
         }
 
@@ -104,17 +108,8 @@ service cloud.firestore {
                 date: Timestamp.now(),
             };
 
-            const docRef = await addDoc(collection(db, 'todos'), newTodo);
-
-            // 로컬 상태 업데이트 (onSnapshot이 자동으로 처리하지만, 즉각적인 UI 반영을 위해)
-            dispatch({
-                type: "CREATE",
-                data: {
-                    id: docRef.id,
-                    ...newTodo,
-                    date: newTodo.date.toMillis(),
-                }
-            });
+            await addDoc(collection(db, 'todos'), newTodo);
+            // onSnapshot이 자동으로 상태를 업데이트하므로 수동 dispatch 불필요
         } catch (error) {
             console.error("Error creating todo:", error);
         }
@@ -130,12 +125,7 @@ service cloud.firestore {
                 await updateDoc(todoRef, {
                     isDone: !currentTodo.isDone
                 });
-
-                // 로컬 상태 업데이트 (onSnapshot이 자동으로 처리)
-                dispatch({
-                    type: "UPDATE",
-                    targetId: targetId,
-                });
+                // onSnapshot이 자동으로 상태를 업데이트하므로 수동 dispatch 불필요
             }
         } catch (error) {
             console.error("Error updating todo:", error);
@@ -146,12 +136,7 @@ service cloud.firestore {
     const onDelete = useCallback(async (targetId) => {
         try {
             await deleteDoc(doc(db, 'todos', targetId));
-
-            // 로컬 상태 업데이트 (onSnapshot이 자동으로 처리)
-            dispatch({
-                type: "DELETE",
-                targetId: targetId,
-            });
+            // onSnapshot이 자동으로 상태를 업데이트하므로 수동 dispatch 불필요
         } catch (error) {
             console.error("Error deleting todo:", error);
         }
